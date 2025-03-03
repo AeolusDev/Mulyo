@@ -1,0 +1,46 @@
+{
+  "name": "mulyo",
+  "version": "3.5.1",
+  "description": "A Node.js and Express.js server designed to handle user authentication using JWT and Passport-Google-OAuth20, manage user data, and perform reading list operations by being deployed as serverless function on Netlify.",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "netlify deploy --prod",
+    "start": "netlify dev",
+    "swagger-autogen": "node ./swagger.js"
+  },
+  "author": "AeolusDev <aeolusdeveloper@gmail.com>",
+  "license": "ISC",
+  "dependencies": {
+    "@firebase/app": "^0.11.1",
+    "@firebase/auth": "^1.9.0",
+    "axios": "^1.4.0",
+    "bcryptjs": "^2.4.3",
+    "body-parser": "^1.20.2",
+    "cloudinary": "^2.5.1",
+    "compression": "^1.7.4",
+    "connect-mongo": "^5.1.0",
+    "cookie-session": "^1.4.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.0.3",
+    "express": "^4.18.2",
+    "express-session": "^1.17.3",
+    "firebase": "^11.3.1",
+    "generate-unique-id": "^2.0.3",
+    "jsonwebtoken": "^9.0.0",
+    "memory-cache": "^0.2.0",
+    "mongoose": "^8.9.5",
+    "multer": "^1.4.5-lts.1",
+    "netlify-lambda": "^2.0.16",
+    "passport": "^0.6.0",
+    "passport-google-oauth20": "^2.0.0",
+    "serverless-http": "^3.2.0",
+    "swagger-autogen": "^2.23.1",
+    "swagger-jsdoc": "^6.2.8",
+    "swagger-ui-express": "^4.6.3"
+  },
+  "devDependencies": {
+    "@faker-js/faker": "^8.0.1",
+    "netlify-cli": "^17.22.1"
+  }
+}

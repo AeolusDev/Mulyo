@@ -1,0 +1,18 @@
+[build]
+    functions = "functions"
+
+[functions]
+  node_bundler = "esbuild"
+  external_node_modules = ["express"]
+  included_files = ["utils/**", "controllers/**", "models/**", "middlewares/**", "routes/**"]
+
+[functions."api"]
+  memory = 1024 # 1GB memory
+  maxDuration = 300
+  maxRequestSize = 100 # 100MB request size limit
+
+[[redirects]]
+from="/api/*"
+to="/.netlify/functions/api/:splat"
+status=200
+force = true
