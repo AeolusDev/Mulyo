@@ -30,6 +30,13 @@ This project aims to resolve these issues through monthly or bi-monthly updates.
 
 ## Setup
 
+## Getting Started
+
+1. Clone the repository: `git clone https://github.com/AeolusDev/Mulyo.git` or `gh repo clone AeolusDev/Mulyo`
+2. Install dependencies: `npm install`
+3. Start the server: `npm start`
+
+
 ### Environmental Variables
 
 To use this project, you need to set the following environmental variables:
@@ -52,12 +59,6 @@ To use this project, you need to set the following environmental variables:
 - FIREBASE_AUTH_DOMAIN: Your Firebase authentication domain
 - FIREBASE_PROJECT_ID: Your Firebase project ID
 - FIREBASE_APP_ID: Your Firebase app ID
-
-## Getting Started
-
-1. Clone the repository: `git clone <repository-url>`
-2. Install dependencies: `npm install`
-3. Start the server: `npm start`
 
 ### Additional Steps
 
