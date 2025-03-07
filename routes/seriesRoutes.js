@@ -1,5 +1,9 @@
 const express = require("express");
 const router = express.Router();
+
+//Import rate limit middleware
+const limiter = require("../middlewares/rateLimit")
+
 const {
   createNewManga,
   getSeries,
@@ -35,10 +39,10 @@ const upload = multer({
 });
 
 // Add a new manga to the database
-router.post("/createNewSeries", createNewManga);
+router.post("/createNewSeries", limiter, createNewManga);
 
 // Upload a new chapter
-router.post("/uploadChapter", (req, res, next) => {
+router.post("/uploadChapter", limiter, (req, res, next) => {
   console.log(`Body: `, req.body);
   // Log request details before processing
   console.log('\n=== Detailed Request Debug ===');
@@ -228,10 +232,10 @@ router.post("/uploadChapter", (req, res, next) => {
 });
 
 // Update a chapter
-router.post("/updateChapter", editChapter);
+router.post("/updateChapter", limiter, upload.array('image', 100), editChapter);
 
 // Edit series details
-router.put("/editSeries/:mangaId", editSeries);
+router.put("/editSeries/:mangaId", limiter, editSeries);
 
 // Get series with URL parameters
 router.get("/getSeries/:mangaId/:nick/:chapterNo", getSeries);

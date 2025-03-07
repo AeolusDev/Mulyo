@@ -4,6 +4,9 @@ const { getAllUsers, getOneUser, createUser, updateUser, deleteUser } = require(
 const { frontAuthMiddleware } = require('../middlewares/auth');
 const { validateUserId } = require('../middlewares/validateInput');
 
+//Import rate limit middleware
+const limiter = require("../middlewares/rateLimit")
+
 // Get all users (requires authentication)
 router.get('/', frontAuthMiddleware, getAllUsers);
 
@@ -11,12 +14,12 @@ router.get('/', frontAuthMiddleware, getAllUsers);
 router.get('/:userId', frontAuthMiddleware, validateUserId, getOneUser);
 
 // Create a user (no authentication required)
-router.post('/createUser', createUser);
+router.post('/createUser', limiter, createUser);
 
 // Update a user (requires authentication)
-router.put('/:userId', frontAuthMiddleware, validateUserId, updateUser);
+router.put('/:userId', limiter, frontAuthMiddleware, validateUserId, updateUser);
 
 // Delete a user (requires authentication)
-router.delete('/:userId', frontAuthMiddleware, validateUserId, deleteUser);
+router.delete('/:userId', limiter, frontAuthMiddleware, validateUserId, deleteUser);
 
 module.exports = router;

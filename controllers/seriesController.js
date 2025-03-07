@@ -446,9 +446,10 @@ const editSeries = async (req, res) => {
 };
 
 const editChapter = async (req, res) => {
-  const { chapterName, nick, chapterNo } = req.body;
+  const { nick, chapterNo } = req.body;
 
-  console.log("Editing chapter:", { chapterName, nick, chapterNo });
+  console.log("req.body: ", req.body);
+  console.log("Editing chapter:", { nick, chapterNo });
 
   try {
     // Load Cloudinary
@@ -482,11 +483,13 @@ const editChapter = async (req, res) => {
       return numA - numB;
     });
 
-    // Upload new file with original filename as public_id and display_name
+    // Upload new files with original filenames as public_id and display_name
     const uploadPromises = sortedFiles.map((file) => {
       return new Promise((resolve, reject) => {
         const public_id = path.parse(file.originalname).name;
 
+        console.log(`Uploading file ${public_id} to ${folderPath}...`);
+        
         const uploadStream = cloudinary.uploader.upload_stream(
           {
             folder: folderPath,
@@ -499,6 +502,7 @@ const editChapter = async (req, res) => {
               reject({ error: error.message, public_id });
             } else {
               resolve(result);
+              console.log(`File ${public_id} uploaded successfully.`);
             }
           }
         );
