@@ -8,7 +8,8 @@ const {
   getLatestUpdate,
   getSeriesDetails,
   getAllSeries,
-  getUploadedImagesCount
+  getUploadedImagesCount,
+  editChapter,
 } = require("../controllers/seriesController");
 
 const { authMiddleware } = require("../middlewares/auth");
@@ -225,6 +226,9 @@ router.post("/uploadChapter", (req, res, next) => {
     });
   });
 });
+
+// Update a chapter
+router.post("/updateChapter", editChapter);
 
 // Edit series details
 router.put("/editSeries/:mangaId", editSeries);
