@@ -24,7 +24,8 @@ const createNewManga = async (req, res) => {
     releaseDate,
     thumbnail
   } = req.body;
-
+  
+  console.log(req.body)
   console.log("Creating new manga:", title);
 
   try {
@@ -84,10 +85,10 @@ const createNewManga = async (req, res) => {
 };
 
 const uploadChapter = async (req, res) => {
-  const { chapterName, nick, chapterNo, totalPageNo } = req.body;
+  const { chapterName, nick, chapterNo, totalPageNo, replace } = req.body;
 
-  console.log("Uploading chapter:", { chapterName, nick, chapterNo, totalPageNo });
-
+  console.log("Uploading chapter:", { chapterName, nick, chapterNo, totalPageNo, replace });
+  console.log("Replace: ", replace);
   try {
     // Load Cloudinary
     const cloudinary = connectCloudinary();
@@ -145,7 +146,9 @@ const uploadChapter = async (req, res) => {
     const uploadPromises = sortedFiles.map((file) => {
       return new Promise((resolve, reject) => {
         const public_id = path.parse(file.originalname).name;
-
+        
+        console.log(`Uploading file ${public_id} to ${folderPath}...`);
+        
         const uploadStream = cloudinary.uploader.upload_stream(
           {
             folder: folderPath,
@@ -158,6 +161,7 @@ const uploadChapter = async (req, res) => {
               reject({ error: error.message, public_id });
             } else {
               resolve(result);
+              console.log(`File ${public_id} uploaded successfully.`);
             }
           }
         );
@@ -176,6 +180,18 @@ const uploadChapter = async (req, res) => {
         success: false,
         message: "Some images failed to upload",
         failures: failedUploads,
+      });
+    }
+
+    // If replace is true, return success message without triggering updates
+    if (replace || replace === true || replace === 'true' || replace === 'True') {
+      return res.status(200).json({
+        success: true,
+        message: "Chapter files replaced successfully",
+        uploads: uploadResults.map((result) => ({
+          url: result.secure_url,
+          displayName: result.public_id,
+        })),
       });
     }
 
@@ -376,6 +392,157 @@ const uploadChapter = async (req, res) => {
   }
 };
 
+const editSeries = async (req, res) => {
+  try {
+    console.log('Editing Series');
+    const { id, nick, fields } = req.body;
+
+    // Find the series list document
+    let list = await seriesList.findOne();
+    if (!list) {
+      return res.status(404).json({
+        success: false,
+        message: "No series list found in database",
+      });
+    }
+
+    // Locate the specific manga entry using the provided id or nick
+    const mangaIndex = list.mangas.findIndex(
+      (m) => m.manga === id || m.nick.toLowerCase() === nick.toLowerCase()
+    );
+
+    if (mangaIndex === -1) {
+      return res.status(404).json({
+        success: false,
+        message: "Manga not found in database",
+      });
+    }
+
+    // Update only the fields that are present in the fields object
+    const manga = list.mangas[mangaIndex];
+    for (const [key, value] of Object.entries(fields)) {
+      if (value.updated !== undefined) {
+        manga[key] = value.updated;
+      }
+    }
+
+    // Save the updated series list document
+    await list.save();
+
+    res.status(200).json({
+      success: true,
+      message: "Series updated successfully",
+      manga,
+    });
+    
+  } catch (error) {
+    console.error("Server error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to edit series",
+      error: error.message,
+    });
+  }
+};
+
+const editChapter = async (req, res) => {
+  const { nick, chapterNo } = req.body;
+
+  console.log("req.body: ", req.body);
+  console.log("Editing chapter:", { nick, chapterNo });
+
+  try {
+    // Load Cloudinary
+    const cloudinary = connectCloudinary();
+
+    // Check if folders exist
+    const folderCheck = await getFolder(nick, chapterNo);
+
+    if (folderCheck.error) {
+      return res.status(404).json({
+        success: false,
+        error: "Chapter folder not found",
+      });
+    }
+
+    const folderPath = `${nick}/${chapterNo}`;
+    console.log("Target folder path:", folderPath);
+
+    // Validate files array
+    if (!req.files || req.files.length === 0) {
+      return res.status(400).json({
+        success: false,
+        error: "No files provided for upload",
+      });
+    }
+
+    // Sort files array based on filenames
+    const sortedFiles = req.files.sort((a, b) => {
+      const numA = parseInt(a.originalname.match(/\d+/)[0]);
+      const numB = parseInt(b.originalname.match(/\d+/)[0]);
+      return numA - numB;
+    });
+
+    // Upload new files with original filenames as public_id and display_name
+    const uploadPromises = sortedFiles.map((file) => {
+      return new Promise((resolve, reject) => {
+        const public_id = path.parse(file.originalname).name;
+
+        console.log(`Uploading file ${public_id} to ${folderPath}...`);
+        
+        const uploadStream = cloudinary.uploader.upload_stream(
+          {
+            folder: folderPath,
+            public_id: public_id,
+            resource_type: "auto", // Automatically detect resource type
+          },
+          (error, result) => {
+            if (error) {
+              console.error(`Failed to upload image ${public_id}:`, error);
+              reject({ error: error.message, public_id });
+            } else {
+              resolve(result);
+              console.log(`File ${public_id} uploaded successfully.`);
+            }
+          }
+        );
+
+        uploadStream.end(file.buffer);
+      });
+    });
+
+    // Wait for the upload to complete
+    const uploadResults = await Promise.all(uploadPromises);
+
+    // Check for any upload failures
+    const failedUploads = uploadResults.filter((result) => result.error);
+    if (failedUploads.length > 0) {
+      return res.status(500).json({
+        success: false,
+        message: "Some images failed to upload",
+        failures: failedUploads,
+      });
+    }
+
+    // Return success message
+    res.status(200).json({
+      success: true,
+      message: "Chapter files replaced successfully",
+      uploads: uploadResults.map((result) => ({
+        url: result.secure_url,
+        displayName: result.public_id,
+      })),
+    });
+  } catch (error) {
+    console.error("Server error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to edit chapter",
+      error: error.message,
+    });
+  }
+};
+
 const getSeriesDetails = async (req, res) => {
   try {
     // Get parameters from URL
@@ -545,6 +712,23 @@ const getLatestUpdate = async (req, res) => {
   }
 };
 
+// Get all series in database
+const getAllSeries = async (req, res) => {
+  try {
+    const series = await seriesList.find();
+    res.status(200).json({ success: true, series });
+  } catch (error) {
+    console.error("Server error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to fetch all series",
+      error: error.message,
+    });
+  }
+};
+
+// Util Functions
+
 async function getFolder(nick, chapterNo) {
   try {
     const cloudinary = connectCloudinary();
@@ -588,4 +772,4 @@ async function getUploadedImagesCount(nick, chapterNo) {
   }
 }
 
-module.exports = { createNewManga, getSeries, uploadChapter, getLatestUpdate, getSeriesDetails, getUploadedImagesCount };
+module.exports = { createNewManga, getSeries, uploadChapter, getLatestUpdate, getSeriesDetails, getUploadedImagesCount, getAllSeries, editSeries, editChapter };

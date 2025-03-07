@@ -1,12 +1,19 @@
 const express = require("express");
 const router = express.Router();
+
+//Import rate limit middleware
+const limiter = require("../middlewares/rateLimit")
+
 const {
   createNewManga,
   getSeries,
   uploadChapter,
+  editSeries,
   getLatestUpdate,
   getSeriesDetails,
-  getUploadedImagesCount
+  getAllSeries,
+  getUploadedImagesCount,
+  editChapter,
 } = require("../controllers/seriesController");
 
 const { authMiddleware } = require("../middlewares/auth");
@@ -32,10 +39,10 @@ const upload = multer({
 });
 
 // Add a new manga to the database
-router.post("/createNewSeries", createNewManga);
+router.post("/createNewSeries", limiter, createNewManga);
 
 // Upload a new chapter
-router.post("/uploadChapter", (req, res, next) => {
+router.post("/uploadChapter", limiter, (req, res, next) => {
   console.log(`Body: `, req.body);
   // Log request details before processing
   console.log('\n=== Detailed Request Debug ===');
@@ -224,7 +231,13 @@ router.post("/uploadChapter", (req, res, next) => {
   });
 });
 
-// Get series with URL parameters (mangaId is optional)
+// Update a chapter
+router.post("/updateChapter", limiter, upload.array('image', 100), editChapter);
+
+// Edit series details
+router.put("/editSeries/:mangaId", limiter, editSeries);
+
+// Get series with URL parameters
 router.get("/getSeries/:mangaId/:nick/:chapterNo", getSeries);
 
 // Get latest Updates
@@ -232,6 +245,9 @@ router.get("/getLatestUpdate", getLatestUpdate);
 
 // Get series details
 router.get("/getSeriesDetails/:mangaId/:nick", getSeriesDetails);
+
+// Get all series in database
+router.get("/getAllSeries", getAllSeries);
 
 // Add a new route for chunked uploads
 router.post("/uploadChapterChunk", upload.single('chunk'), async (req, res) => {

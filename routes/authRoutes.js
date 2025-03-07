@@ -1,6 +1,10 @@
 const express = require("express");
 const router = express.Router();
 const jwt = require('jsonwebtoken');
+
+//Import rate limit middleware
+const limiter = require("../middlewares/rateLimit")
+
 const {
   login,
   logout,
@@ -17,7 +21,7 @@ const googleAuth = passport.authenticate("google", {
 });
 
 // Login
-router.post("/login", frontAuthMiddleware, login);
+router.post("/login", limiter, frontAuthMiddleware, login);
 
 router.get("/login/success", passportLogin);
 
@@ -30,7 +34,7 @@ router.get("/google", passport.authenticate("google", {
 }));
 
 
-router.post('/admin/login', authMiddleware, adminLogin);
+router.post('/admin/login', limiter, authMiddleware, adminLogin);
 
 // router.post('/jwt', jwtCreate)
 
