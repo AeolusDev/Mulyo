@@ -28,7 +28,7 @@ This project aims to resolve these issues through monthly or bi-monthly updates.
 
 2. **Netlify Serverless Functions:** Netlify's serverless functions were chosen as they provided a more efficient and scalable solution compared to the previous hosting provider. Serverless functions offered a more flexible architecture.
 
-## Setup
+# Setup
 
 ## Getting Started
 

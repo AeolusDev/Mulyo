@@ -1,6 +1,6 @@
 {
   "name": "mulyo",
-  "version": "3.5.1",
+  "version": "3.5.3",
   "description": "A Node.js and Express.js server designed to handle user authentication using JWT and Passport-Google-OAuth20, manage user data, and perform reading list operations by being deployed as serverless function on Netlify.",
   "main": "server.js",
   "scripts": {

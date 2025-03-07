@@ -376,6 +376,62 @@ const uploadChapter = async (req, res) => {
   }
 };
 
+const editSeries = async (req, res) => {
+  try {
+    console.log('Editing Series');
+    const { id, nick, fields } = req.body;
+
+    // Find the series list document
+    let list = await seriesList.findOne();
+    if (!list) {
+      return res.status(404).json({
+        success: false,
+        message: "No series list found in database",
+      });
+    }
+
+    // Locate the specific manga entry using the provided id or nick
+    const mangaIndex = list.mangas.findIndex(
+      (m) => m.manga === id || m.nick.toLowerCase() === nick.toLowerCase()
+    );
+
+    if (mangaIndex === -1) {
+      return res.status(404).json({
+        success: false,
+        message: "Manga not found in database",
+      });
+    }
+
+    // Update only the fields that are present in the fields object
+    const manga = list.mangas[mangaIndex];
+    for (const [key, value] of Object.entries(fields)) {
+      if (value.updated !== undefined) {
+        manga[key] = value.updated;
+      }
+    }
+
+    // Save the updated series list document
+    await list.save();
+
+    res.status(200).json({
+      success: true,
+      message: "Series updated successfully",
+      manga,
+    });
+    
+  } catch (error) {
+    console.error("Server error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to edit series",
+      error: error.message,
+    });
+  }
+};
+
+
+
+
 const getSeriesDetails = async (req, res) => {
   try {
     // Get parameters from URL
@@ -545,6 +601,23 @@ const getLatestUpdate = async (req, res) => {
   }
 };
 
+// Get all series in database
+const getAllSeries = async (req, res) => {
+  try {
+    const series = await seriesList.find();
+    res.status(200).json({ success: true, series });
+  } catch (error) {
+    console.error("Server error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to fetch all series",
+      error: error.message,
+    });
+  }
+};
+
+// Util Functions
+
 async function getFolder(nick, chapterNo) {
   try {
     const cloudinary = connectCloudinary();
@@ -588,4 +661,4 @@ async function getUploadedImagesCount(nick, chapterNo) {
   }
 }
 
-module.exports = { createNewManga, getSeries, uploadChapter, getLatestUpdate, getSeriesDetails, getUploadedImagesCount };
+module.exports = { createNewManga, getSeries, uploadChapter, getLatestUpdate, getSeriesDetails, getUploadedImagesCount, getAllSeries, editSeries };

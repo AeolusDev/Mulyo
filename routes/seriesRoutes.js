@@ -4,8 +4,10 @@ const {
   createNewManga,
   getSeries,
   uploadChapter,
+  editSeries,
   getLatestUpdate,
   getSeriesDetails,
+  getAllSeries,
   getUploadedImagesCount
 } = require("../controllers/seriesController");
 
@@ -224,7 +226,10 @@ router.post("/uploadChapter", (req, res, next) => {
   });
 });
 
-// Get series with URL parameters (mangaId is optional)
+// Edit series details
+router.put("/editSeries/:mangaId", editSeries);
+
+// Get series with URL parameters
 router.get("/getSeries/:mangaId/:nick/:chapterNo", getSeries);
 
 // Get latest Updates
@@ -232,6 +237,9 @@ router.get("/getLatestUpdate", getLatestUpdate);
 
 // Get series details
 router.get("/getSeriesDetails/:mangaId/:nick", getSeriesDetails);
+
+// Get all series in database
+router.get("/getAllSeries", getAllSeries);
 
 // Add a new route for chunked uploads
 router.post("/uploadChapterChunk", upload.single('chunk'), async (req, res) => {

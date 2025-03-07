@@ -6,7 +6,6 @@
 
 //   // Define allowed origins
 //   const productionOrigins = [
-//     'https://your-site.com'
 //   ];
 
 //   const developmentOrigins = [
