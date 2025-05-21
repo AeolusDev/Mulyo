@@ -72,6 +72,9 @@ To use this project, you need to set the following environmental variables:
 
 By following these steps, you should be able to effectively use the functionalities provided by the server and integrate them into your applications.
 
+## Updating packages
+You can update the packages by running `npm run update` in the project directory.
+
 ## Deployment
 
 After testing locally, consider deploying the server to a production environment using Netlify to make it accessible to users. Ensure that you update environmental variables and configurations accordingly for the production environment.
