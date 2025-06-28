@@ -28,14 +28,7 @@ This project aims to resolve these issues through monthly or bi-monthly updates.
 
 2. **Netlify Serverless Functions:** Netlify's serverless functions were chosen as they provided a more efficient and scalable solution compared to the previous hosting provider. Serverless functions offered a more flexible architecture.
 
-# Setup
-
-## Getting Started
-
-1. Clone the repository: `git clone https://github.com/AeolusDev/Mulyo.git` or `gh repo clone AeolusDev/Mulyo`
-2. Install dependencies: `npm install`
-3. Start the server: `npm start`
-
+## Setup
 
 ### Environmental Variables
 
@@ -60,17 +53,23 @@ To use this project, you need to set the following environmental variables:
 - FIREBASE_PROJECT_ID: Your Firebase project ID
 - FIREBASE_APP_ID: Your Firebase app ID
 
+## Getting Started
+
+1. Clone the repository: `git clone <repository-url>`
+2. Install dependencies: `npm install`
+3. Start the server: `npm start`
+
 ### Additional Steps
 
 4. Set up the required environmental variables by creating a `.env` file in the root directory of the project and filling in the necessary values for ENVs.
 5. Run the server locally using `npm start` if you have a development environment setup.
 6. Once the server is running, you can access the provided endpoints for user authentication, user data management, and reading list operations.
 7. Test the endpoints using tools like Postman or by integrating them into your client-side application.
-8. Ironically, although the API is designed to be free of any restrictions, it has a slight flaw. Netlify functions do not allow for more than 6MB of uploads. Any file that is uploaded must be smaller than 6MB.
-   That is why when uploading multiple files, the API is coded to receive files in batches each of no more than 6MB. A simple frontend solution could be to split the files into smaller chunks and compressing them before uploading them.
-   This restriction can however be avoided by simply not using a serverless platform for file uploads. Any normal hosting platform designed to host APIs such as AWS can be used and the 6MB limit can be bypassed.
 
 By following these steps, you should be able to effectively use the functionalities provided by the server and integrate them into your applications.
+
+## Updating packages
+You can update the packages by running `npm run update` in the project directory.
 
 ## Deployment
 

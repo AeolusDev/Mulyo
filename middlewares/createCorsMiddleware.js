@@ -1,11 +1,15 @@
 // const cors = require('cors');
+// const chalk = require('chalk');
 
 // const createCorsMiddleware = () => {
 //   const isDevelopment = process.env.NODE_ENV === 'development';
-//   console.log('Environment:', process.env.NODE_ENV);
+//   console.log(chalk.blue('Environment:', process.env.NODE_ENV));
 
-//   // Define allowed origins
 //   const productionOrigins = [
+//     'https://alternativescans.icu',
+//     'https://altscans.netlify.app',
+//     'https://staff-dashboard-six.vercel.app',
+//     'https://alternativescans.pages.dev'
 //   ];
 
 //   const developmentOrigins = [
@@ -26,6 +30,7 @@
 //       if (!origin || whitelist.includes(origin)) {
 //         callback(null, true);
 //       } else {
+//         console.log(chalk.yellow('Not allowed by CORS: ', origin));
 //         callback(new Error('Not allowed by CORS'));
 //       }
 //     },

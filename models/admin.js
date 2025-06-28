@@ -4,6 +4,8 @@ const mongoose = require('mongoose');
 const AdminSchema = new mongoose.Schema({
     email: { type: String, required: true, unique: true},
     password: { type: String, required: true },
+    role: { type: [String], enum: ['super-admin','admin', 'developer', "raw-provider", "typesetter", "editor", "proofreader", "quality-checker", "normal"], default: 'normal' },
+    permissions: { type: Array, default: [ 'Read' ] },
     created_at: { type: Date, default: Date.now },
 });
 

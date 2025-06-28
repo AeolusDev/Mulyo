@@ -7,6 +7,7 @@ const ChapterSchema = new mongoose.Schema({
   isComplete: { type: Boolean, default: false },
   pageCount: { type: Number, default: 0 },
   thumbnail: { type: String },
+  visibility: { type: String, default: 'public' }
 });
 
 // Schema for the main series list
@@ -29,18 +30,20 @@ const SeriesListSchema = new mongoose.Schema({
     genre: { type: String, required: true },
     releaseDate: { type: Date, required: true },
     statistics: {
-      follow: { type: Number },
+      likes: { type: Number },
       rating: { type: Number },
     },
     status: { type: String },
     created_at: { type: Date, default: Date.now },
-    chapters: [ChapterSchema], // Include chapters array
+    visibility: { type: String, default: 'public' },
+    chapters: [ChapterSchema],
   }]
 });
 
 // Schema for latest releases
 const LatestReleaseSchema = new mongoose.Schema({
   manga: { type: String, required: true }, // Reference to manga ID
+  chapterName: { type: String },
   title: { type: String, required: true },
   nick: { type: String, required: true },
   chapterNo: { type: String, required: true },
@@ -50,7 +53,13 @@ const LatestReleaseSchema = new mongoose.Schema({
   uploadDate: { type: Date, default: Date.now },
   isComplete: { type: Boolean, default: false },
 }, {
-  timestamps: true // Adds createdAt and updatedAt fields
+  timestamps: true,
+  visibility: { type: String, default: 'public' }
+});
+
+const statsSchema = new mongoose.Schema({
+  likes: { type: Array },
+  rating: { type: Array },
 });
 
 // Create indexes for better query performance
@@ -59,5 +68,6 @@ LatestReleaseSchema.index({ manga: 1, chapterNo: 1 }); // Compound index for fin
 
 const seriesList = mongoose.model('SeriesList', SeriesListSchema);
 const latestRelease = mongoose.model('LatestRelease', LatestReleaseSchema);
+const stats = mongoose.model('Stats', statsSchema);
 
-module.exports = { seriesList, latestRelease };
+module.exports = { seriesList, latestRelease, stats };

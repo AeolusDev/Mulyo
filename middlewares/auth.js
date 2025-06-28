@@ -1,43 +1,70 @@
+const chalk = require('chalk');
 const jwt = require('jsonwebtoken');
 
 const authMiddleware = (req, res, next) => {
-    // Get the token from the request headers
     const token = req.headers.authorization;
     if (!token) {
-        // Return error response if token is missing
+        console.log(chalk.red('Token is missing \n Origin: ', req.headers.origin));
         return res.status(401).json({ message: 'Authentication token missing' });
-        console.log('Token is missing \n Origin: ', req.headers.origin);
     }
 
     try {
-        // Verify the token
-        let verify = jwt.verify(token, process.env.JWT_SECRET);
-        console.log('Token verified \n Origin: ', req.headers.origin);
+        jwt.verify(token, process.env.JWT_SECRET);
+        console.log(chalk.green('Token verified authMiddleware \nOrigin: ', req.headers.origin));
         next();
     } catch (err) {
-        // Return error response if token is invalid
-        return res.status(401).json({ message: 'Authentication token invalid' });
+      if(process.env.NODE_ENV === 'development') {
+          console.log(chalk.red('Authentication token invalid'));
+          console.log(chalk.red('Auth Token Received: ', token));
+          console.log(chalk.red('Actual Auth Token: ', process.env.FRONT_JWT_SECRET));
+          console.log(chalk.red('Error: ', err));
+          return res.status(401).json({ message: 'Authentication token invalid' });
+      }
+      
+      console.log(chalk.red('Authentication token invalid'));
+      return res.status(401).json({ message: 'Authentication token invalid' });
     }
 };
 
 const frontAuthMiddleware = (req, res, next) => {
-    // Get the token from the request headers
     const token = req.headers.authorization;
     if (!token) {
-        // Return error response if token is missing
+        console.log(chalk.red('Token is missing \n Origin: ', req.headers.origin));
         return res.status(401).json({ message: 'Authentication token missing' });
-        console.log('Token is missing \n Origin: ', req.headers.origin);
     }
 
     try {
-        // Verify the token
-        let verify = jwt.verify(token, process.env.FRONT_JWT_SECRET);
-        console.log('Token verified \n Origin: ', req.headers.origin);
+        jwt.verify(token, process.env.FRONT_JWT_SECRET);
+        console.log(chalk.green('Token verified frontAuthMiddleware \nOrigin: ', req.headers.origin));
         next();
     } catch (err) {
-        // Return error response if token is invalid
+        if(process.env.NODE_ENV === 'development') {
+            console.log(chalk.red('Authentication token invalid'));
+            console.log(chalk.red('Auth Token Received: ', token));
+            console.log(chalk.red('Actual Auth Token: ', process.env.FRONT_JWT_SECRET));
+            console.log(chalk.red('Error: ', err));
+            return res.status(401).json({ message: 'Authentication token invalid' });
+        }
+        
+        console.log(chalk.red('Authentication token invalid'));
         return res.status(401).json({ message: 'Authentication token invalid' });
     }
 };
 
-module.exports = { authMiddleware, frontAuthMiddleware };
+const dashboardAuthMiddleware = (req, res, next) => {
+  // Check if req parameter exists
+  if (!req || !req.headers) {
+    console.log(chalk.red('Missing request object or headers'));
+    return res.status(400).json({ message: 'Invalid request' });
+  }
+    const origin = req.headers.origin || req.headers.host;
+  
+  if (origin !== `` && origin !== `` && origin !== `http://localhost:3000`) {
+    console.log(chalk.red(`Received origin: ${origin}`));
+    return "Is not Dashboard";
+  };
+  
+  return "Is Dashboard";
+}
+
+module.exports = { authMiddleware, frontAuthMiddleware, dashboardAuthMiddleware };

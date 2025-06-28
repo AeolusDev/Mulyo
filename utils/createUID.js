@@ -7,4 +7,13 @@ const createUID = () => {
     });
 };
 
-module.exports = createUID;
+const randomPassword = () => {
+    return generateUniqueId({
+        length: 10,
+        useLetters: true,
+        useNumbers: true,
+        useSymbols: true
+    });
+};
+
+module.exports = { createUID, randomPassword };

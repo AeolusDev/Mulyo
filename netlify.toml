@@ -16,3 +16,14 @@ from="/api/*"
 to="/.netlify/functions/api/:splat"
 status=200
 force = true
+
+[[headers]]
+  for = "/*"
+    [headers.values]
+    Access-Control-Allow-Origin = "*"
+    Access-Control-Allow-Methods = "GET, POST, PUT, DELETE, OPTIONS"
+    Access-Control-Allow-Headers = "Content-Type, Authorization, X-Requested-With, Accept, Origin, x-user-token"
+    Access-Control-Allow-Credentials = "true"
+    
+[dev]
+    port = 8888
